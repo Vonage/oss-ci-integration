@@ -1,0 +1,42 @@
+name: WhiteSource CI integration
+description: automation for executing the WS agent in an organization with configuration files
+
+on:
+  pull_request:
+    branches: [ $default-branch ]
+
+runs:
+    using: "composite" 
+    steps:
+  
+    - name: Downloading the WS config file
+      # Download the project config file repository.
+      run: |
+        git clone https://"$WHITESOURCE_GH_PAT"@github.com/"$WHITESOURCE_CONFIG_REPO" |& tee repo.txt
+        repoName=$(cat repo.txt | grep Cloning | cut -d"'" -f2) 
+        cp ./$repoName/"$WHITESOURCE_PRODUCT_NAME"/"$WHITESOURCE_PROJECT_NAME"/wss-generated-file-CI.config .
+        mv ./$repoName/UA/wss-unified-agent.jar .
+      shell: bash 
+      
+    - name: Install project prerequisites 
+      # install dependencies based on the technology in use 
+      run: |
+         sudo apt update
+         if grep -q gradle wss-generated-file-CI.config; then sudo apt install gradle; fi
+         if grep -q hex wss-generated-file-CI.config; then sudo apt install elixir; fi
+         if grep -q python3 wss-generated-file-CI.config; then sudo apt-get install python3-setuptools && sudo pip3 install virtualenv pipenv; fi
+         if grep -q python2.7 wss-generated-file-CI.config; then sudo apt-get install python-setuptools && sudo pip install virtualenv pipenv; fi
+         if grep -q maven wss-generated-file-CI.config; then sudo apt install maven; fi
+         if grep -q ant wss-generated-file-CI.config; then sudo apt-get install ant; fi
+         if grep -q bower wss-generated-file-CI.config; then sudo npm install -g bower; fi
+         if grep -q ruby wss-generated-file-CI.config; then sudo apt install ruby-full; fi
+         if grep -q cocoapods wss-generated-file-CI.config; then sudo apt install ruby-full && sudo gem install cocoapods; fi
+      shell: bash
+      
+    - name: Execute the scan
+      run: |
+        echo "npm.accessToken=$NPM_TOKEN" >> wss-generated-file-CI.config
+        java -jar wss-unified-agent.jar -c wss-generated-file-CI.config -apiKey "$WHITESOURCE_API_KEY" -userKey "$WHITESOURCE_USER_KEY" -logLevel debug
+      shell: bash
+      env:
+         NPM_TOKEN: "$WHITESOURCE_NPM_TOKEN"
