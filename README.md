@@ -2,7 +2,7 @@
 
 Github action for CI integration.
 
-How to use the action:
+How to use the action in an organization:
 1. Create a repository with all your config files in the following format:
       repoName/ProductName/ProjectName/wss-generated-file-CI.config
       
@@ -17,7 +17,9 @@ How to use the action:
 * WHITESOURCE_NPM_TOKEN:    NPM token to access private organizations if needed (defined in the organization level)
 * WHITESOURCE_USER_KEY:     Your WS user key
 
-3. Add a GH action to use the template:
+3. Onboarding new repository:
+
+   Add the relevant GH action to the repository:
 
 a. Node projects: Change the Node version in line 10 as needed
 ```
@@ -44,7 +46,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
       - name: WhiteSource CI integration
-        uses: Idancc/WhiteSource-CI-Integration@v2.6
+        uses: Vonage/oss-ci-integration@v1.0
         env:
           WHITESOURCE_PRODUCT_NAME: ${{ secrets.WHITESOURCE_PRODUCT_NAME }}
           WHITESOURCE_PROJECT_NAME: ${{ github.event.repository.name }}
@@ -63,7 +65,7 @@ b. Other:
 name: WhiteSource CI integration
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ develop, release, master ]
   schedule:
     - cron: '0 0 * * 0'
 jobs:
@@ -76,7 +78,7 @@ jobs:
           ref: ${{ github.ref }}
         
       - name: WhiteSource CI integration
-        uses: Idancc/WhiteSource-CI-Integration@v2.5.1
+        uses: Vonage/oss-ci-integration@v1.0
         env:
           WHITESOURCE_PRODUCT_NAME: ${{ secrets.WHITESOURCE_PRODUCT_NAME }}
           WHITESOURCE_PROJECT_NAME: ${{ github.event.repository.name }}
@@ -100,7 +102,7 @@ name: WhiteSource CI integration
 # events but only for the master branch
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ develop, release, master ]
   schedule:
     - cron: '0 0 * * 0'
 
@@ -132,7 +134,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: WhiteSource CI integration
-        uses: Idancc/WhiteSource-CI-Integration@v2.5.1
+        uses: Vonage/oss-ci-integration@v1.0
         env:
           WHITESOURCE_PRODUCT_NAME: ${{ secrets.WHITESOURCE_PRODUCT_NAME }}
           WHITESOURCE_PROJECT_NAME: ${{ github.event.repository.name }}
