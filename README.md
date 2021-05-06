@@ -45,11 +45,14 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.ref }}
+      - name: Extract repository name
+        run: echo "repository_name=$(echo ${{ github.repository }} | cut -d'/' -f2)" >> $GITHUB_ENV
+        shell: bash
       - name: WhiteSource CI integration
         uses: Vonage/oss-ci-integration@v1.0
         env:
           WHITESOURCE_PRODUCT_NAME: ${{ secrets.WHITESOURCE_PRODUCT_NAME }}
-          WHITESOURCE_PROJECT_NAME: ${{ github.event.repository.name }}
+          WHITESOURCE_PROJECT_NAME: ${{ env.repository_name }}
           WHITESOURCE_GH_PAT: ${{ secrets.WHITESOURCE_GH_PAT }}
           WHITESOURCE_CONFIG_REPO: ${{ secrets.WHITESOURCE_CONFIG_REPO }}
           WHITESOURCE_NPM_TOKEN: ${{ secrets.WHITESOURCE_NPM_TOKEN }}
@@ -76,12 +79,14 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.ref }}
-        
+      - name: Extract repository name
+        run: echo "repository_name=$(echo ${{ github.repository }} | cut -d'/' -f2)" >> $GITHUB_ENV
+        shell: bash  
       - name: WhiteSource CI integration
         uses: Vonage/oss-ci-integration@v1.0
         env:
           WHITESOURCE_PRODUCT_NAME: ${{ secrets.WHITESOURCE_PRODUCT_NAME }}
-          WHITESOURCE_PROJECT_NAME: ${{ github.event.repository.name }}
+          WHITESOURCE_PROJECT_NAME: ${{ env.repository_name }}
           WHITESOURCE_GH_PAT: ${{ secrets.WHITESOURCE_GH_PAT }}
           WHITESOURCE_CONFIG_REPO: ${{ secrets.WHITESOURCE_CONFIG_REPO }}
           WHITESOURCE_NPM_TOKEN: ${{ secrets.WHITESOURCE_NPM_TOKEN }}
@@ -132,12 +137,14 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.ref }}
-
+      - name: Extract repository name
+        run: echo "repository_name=$(echo ${{ github.repository }} | cut -d'/' -f2)" >> $GITHUB_ENV
+        shell: bash  
       - name: WhiteSource CI integration
         uses: Vonage/oss-ci-integration@v1.0
         env:
           WHITESOURCE_PRODUCT_NAME: ${{ secrets.WHITESOURCE_PRODUCT_NAME }}
-          WHITESOURCE_PROJECT_NAME: ${{ github.event.repository.name }}
+          WHITESOURCE_PROJECT_NAME: ${{ env.repository_name }}
           WHITESOURCE_GH_PAT: ${{ secrets.WHITESOURCE_GH_PAT }}
           WHITESOURCE_CONFIG_REPO: ${{ secrets.WHITESOURCE_CONFIG_REPO }}
           WHITESOURCE_NPM_TOKEN: ${{ secrets.WHITESOURCE_NPM_TOKEN }}
