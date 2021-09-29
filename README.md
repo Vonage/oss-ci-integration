@@ -19,14 +19,14 @@ How to use the action in an organization:
 
 3. Onboarding new repository:
 
-   Add the relevant GH action to the repository:
+   Add the relevant GH action to the repository in the following path: .github/workflows/ws.yml
 
 a. Node projects: Change the Node version in line 10 as needed
 ```
 name: WhiteSource CI integration
 on:
   pull_request:
-    branches: [ develop, release, master ]
+    branches: [ develop, release, master, main ]
   schedule:
     - cron: '0 0 * * 0'
 jobs:
@@ -68,7 +68,7 @@ b. Other:
 name: WhiteSource CI integration
 on:
   pull_request:
-    branches: [ develop, release, master ]
+    branches: [ develop, release, master, main ]
   schedule:
     - cron: '0 0 * * 0'
 jobs:
@@ -107,7 +107,7 @@ name: WhiteSource CI integration
 # events but only for the master branch
 on:
   pull_request:
-    branches: [ develop, release, master ]
+    branches: [ develop, release, master, main ]
   schedule:
     - cron: '0 0 * * 0'
 
