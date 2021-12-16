@@ -18,7 +18,7 @@ How to use the action in an organization:
 
 3. Onboarding new repository:
 
-   Add the relevant GH action to the repository in the following path: .github/workflows/ws.yml
+   Add the relevant GH action to the repository in the following path: .github/workflows/whitesourceAction.yml
 
 a. Node projects:
 
