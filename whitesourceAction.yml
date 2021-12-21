@@ -72,3 +72,17 @@ jobs:
       - name: Policy Rejection Summary
         if: ${{ always() }}
         run: cat ./whitesource/policyRejectionSummary.json
+
+  # This job makes it so you'll have a single branch protection rule for all PRs,
+  # including PRs that didn't change the package.json or package-lock.json files.
+  # TODO: Under branch protection rules, enforce the 'WhiteSource Scan Completed' check instead of any another WhiteSource check you have.
+  status-check:
+    name: WhiteSource Scan Completed
+    needs: [should-scan, whitesource-scan]
+    # The always() check is needed to ensure that this job runs even if the previous jobs fail/canceled.
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Exits if the scan failed, when it should have succeeded
+        if: ${{ needs.should-scan.outputs.should-scan == 'true' && needs.whitesource-scan.result != 'success' }}
+        run: exit 1
