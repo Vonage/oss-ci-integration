@@ -2,8 +2,7 @@ name: WhiteSource CI integration
 
 on:
   pull_request:
-    branches: [develop] # TODO: replace with your default branch name
-  pull_request_review:
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
     branches: [develop] # TODO: replace with your default branch name
 
 concurrency:
@@ -13,7 +12,7 @@ concurrency:
 jobs:
   should-scan:
     # Determine if the WhiteSource action should run based on:
-    # - PR state must be approved.
+    # - PR must not be a draft.
     # - PR must include changes to the package.json or package-lock.json files.
     name: WhiteSource Run Conditions
     runs-on: ubuntu-latest
@@ -26,8 +25,8 @@ jobs:
           fetch-depth: 0
 
       - name: Check PR state
-        if: ${{ steps.github.event.review.state == 'approved' }}
-        run: echo "PR-APPROVED=true" >> $GITHUB_ENV
+        if: ${{ !github.event.pull_request.draft }}
+        run: echo "PR-NOT-DRAFT=true" >> $GITHUB_ENV
 
       - name: Get all changed files
         id: changed-files
@@ -39,7 +38,7 @@ jobs:
 
       - name: Check if all conditions are met
         id: conditions-check
-        if: ${{ env.PR-APPROVED == 'true' && env.PACKAGES-CHANGED == 'true' }}
+        if: ${{ env.PR-NOT-DRAFT == 'true' && env.PACKAGES-CHANGED == 'true' }}
         run: echo "::set-output name=should-scan::true"
 
   whitesource-scan:
@@ -73,17 +72,3 @@ jobs:
       - name: Policy Rejection Summary
         if: ${{ always() }}
         run: cat ./whitesource/policyRejectionSummary.json
-
-  # This job makes it so you'll have a single branch protection rule for all PRs,
-  # including PRs that didn't change the package.json or package-lock.json files.
-  # TODO: Under branch protection rules, enfore the 'WhiteSource Scan Completed' check.
-  status-check:
-    name: WhiteSource Scan Completed
-    needs: [should-scan, whitesource-scan]
-    # The always() check is needed to ensure that this job runs even if the previous jobs fail/canceled.
-    if: ${{ needs.should-scan.outputs.should-scan == 'true' && always() }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Exits if the scan failed, when it should have succeeded
-        if: ${{ needs.whitesource-scan.result != 'success' }}
-        run: exit 1
