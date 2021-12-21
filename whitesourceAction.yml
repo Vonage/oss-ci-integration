@@ -80,12 +80,10 @@ jobs:
   status-check:
     name: WhiteSource Scan Completed
     needs: [should-scan, whitesource-scan]
-    if: always()
+    # The always() check is needed to ensure that this job runs even if the previous jobs fail/canceled.
+    if: ${{ needs.should-scan.outputs.should-scan == 'true' && always() }}
     runs-on: ubuntu-latest
     steps:
       - name: Exits if the scan failed, when it should have succeeded
-        if: ${{ needs.should-scan.outputs.should-scan == 'true' && needs.whitesource-scan.result != 'success' }}
-        run: exit 1
-      - name: Exists if the scan ran, when it should have been skipped
-        if: ${{ needs.should-scan.outputs.should-scan != 'true' && needs.whitesource-scan.result != 'skipped' }}
+        if: ${{ needs.whitesource-scan.result != 'success' }}
         run: exit 1
